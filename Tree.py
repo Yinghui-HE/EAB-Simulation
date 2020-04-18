@@ -10,6 +10,7 @@ class Tree(object):
         self.neighbor_list = []
         self.x = x
         self.y = y
+        self.removed = False
 
     def is_infected(self):
         return self.infected
@@ -56,6 +57,12 @@ class Tree(object):
 
     def get_neighbors(self):
         return self.neighbor_list
+
+    def remove_tree(self):
+        self.removed = True
+
+    def is_removed(self):
+        return self.removed
 
     def __str__(self):
         msg = "Tree Info: \n\t" \
