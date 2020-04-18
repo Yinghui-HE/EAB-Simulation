@@ -11,9 +11,10 @@ from Tree import Tree
 from Beetle import Beetle
 # np.set_printoptions(threshold=np.inf)
 
-def plot_colored_grid(grid_health_level):
+def plot_colored_grid(grid_health_level, time_in_months):
     num_rows = grid_health_level.shape[0]
     num_cols = grid_health_level.shape[1]
+
     # create discrete colormap
     # cmap = colors.ListedColormap(['#A41212', '#C52C2C',  '#E14545', '#FD6A6A', '#FEBCBC'])
     cmap = colors.ListedColormap(['green', '#FEBCBC', '#FD6A6A', '#C52C2C', '#A41212'])
@@ -25,6 +26,7 @@ def plot_colored_grid(grid_health_level):
     norm = colors.BoundaryNorm(bounds, cmap.N)
 
     fig, ax = plt.subplots()
+    plt.title("Ash tree population simulation at time = " + str(time_in_months) + " months")
     ax.imshow(grid_health_level, cmap=cmap, norm=norm)
 
     # draw gridlines
@@ -143,12 +145,12 @@ def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_t
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             # print(grid_health_level)
-            plot_colored_grid(grid_health_level)
+            plot_colored_grid(grid_health_level, time)
             print()
     grid_health_level = generate_tree_grid_by_health_level(grid_tree)
     print(grid_health_level)
     np.set_printoptions(threshold=np.inf)
-    plot_colored_grid(grid_health_level)
+    # plot_colored_grid(grid_health_level)
 
 
 
