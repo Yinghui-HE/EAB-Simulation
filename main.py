@@ -7,35 +7,11 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 from matplotlib.pyplot import plot, ion, show
 import matplotlib.animation as animation
-import os
+
 
 from Tree import Tree
 from Beetle import Beetle
 # np.set_printoptions(threshold=np.inf)
-
-img_list = []
-
-def _make_dir(filename):
-    folder = os.path.dirname(filename)
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-
-def save_video(video_frames, filename, fps=15, video_format='mp4'):
-    assert fps == int(fps), fps
-    import skvideo.io
-    _make_dir(filename)
-
-    skvideo.io.vwrite(
-        filename,
-        video_frames,
-        inputdict={
-            '-r': str(int(fps)),
-        },
-        outputdict={
-            '-f': video_format,
-            '-pix_fmt': 'yuv420p', # '-pix_fmt=yuv420p' needed for osx https://github.com/scikit-video/scikit-video/issues/74
-        }
-    )
 
 def plot_colored_grid(grid_health_level):
     num_rows = grid_health_level.shape[0]
@@ -57,12 +33,8 @@ def plot_colored_grid(grid_health_level):
     ax.set_yticks(np.arange(0, num_rows+1, 5));
     # ani = animation.FuncAnimation(fig, update, data_gen, interval=500,
     #                               save_count=50)
-    # plt.show()
-    fig.canvas.draw()
-    img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-    img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-
-    return img
+    plt.show()
+    # plt.draw()
 
 def generate_random_grid(num_rows, num_cols):
     # TODO: sparse
@@ -235,15 +207,12 @@ def main():
         if time % 4 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             print(grid_health_level)
-            img = plot_colored_grid(grid_health_level)
-            img_list.append(img)
+            plot_colored_grid(grid_health_level)
             print()
     grid_health_level = generate_tree_grid_by_health_level(grid_tree)
     print(grid_health_level)
     np.set_printoptions(threshold=np.inf)
     plot_colored_grid(grid_health_level)
-
-    save_video(np.array(img_list), "video.mp4", fps=15, video_format='mp4')
 
 
 
