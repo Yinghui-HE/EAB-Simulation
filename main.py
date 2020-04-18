@@ -11,7 +11,7 @@ from Tree import Tree
 from Beetle import Beetle
 # np.set_printoptions(threshold=np.inf)
 
-def plot_colored_grid(grid_health_level, time_in_months):
+def plot_colored_grid(grid_health_level, time_in_months, type):
     num_rows = grid_health_level.shape[0]
     num_cols = grid_health_level.shape[1]
 
@@ -22,11 +22,11 @@ def plot_colored_grid(grid_health_level, time_in_months):
     cmap.set_under('white')
     cmap.set_over('blue')
 
-    bounds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+    bounds = [0, 0.11, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
     norm = colors.BoundaryNorm(bounds, cmap.N)
 
     fig, ax = plt.subplots()
-    plt.title("Ash tree population simulation\nat time = " + str(time_in_months) +
+    plt.title("Ash tree population simulation (" + type + ")\nat time = " + str(time_in_months) +
               " months (" + str(time_in_months/12) + " years)")
     ax.imshow(grid_health_level, cmap=cmap, norm=norm)
 
@@ -149,7 +149,7 @@ def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_t
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             # print(grid_health_level)
-            plot_colored_grid(grid_health_level, time)
+            plot_colored_grid(grid_health_level, time, "natural simulation")
             print()
     grid_health_level = generate_tree_grid_by_health_level(grid_tree)
     print(grid_health_level)
@@ -163,16 +163,6 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
     for time in range(1, num_months, time_step):
         # at each time step
         beetles_next = []
-
-        for tree in list_tree:
-            if tree.is_infected():
-                tree.update_infected_time(curr_time=time)
-                if tree.get_health_level() >= health_level_threshold:
-                    list_of_trees_left.remove(tree)
-                    grid_tree[tree.x][tree.y] = None
-
-        # print("\nUpdate tree's infected years", tree)
-        list_tree = list_of_trees_left
 
         for beetle in list_of_beetles:
             if beetle.get_curr_tree() in list_of_trees_left: # if the tree wasn't removed
@@ -191,12 +181,24 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             # print(grid_health_level)
-            plot_colored_grid(grid_health_level, time)
+            plot_colored_grid(grid_health_level, time, "infested tree removal with threshold = " + str(health_level_threshold))
             print()
-    grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-    print(grid_health_level)
-    np.set_printoptions(threshold=np.inf)
-    # plot_colored_grid(grid_health_level)
+
+        for tree in list_tree:
+            if tree.is_infected():
+                tree.update_infected_time(curr_time=time)
+                # remove the tree if pass the threshold
+                if tree.get_health_level() > health_level_threshold:
+                    list_of_trees_left.remove(tree)
+                    grid_tree[tree.x][tree.y] = None
+
+        # print("\nUpdate tree's infected years", tree)
+        list_tree = list_of_trees_left
+
+    # grid_health_level = generate_tree_grid_by_health_level(grid_tree)
+    # print(grid_health_level)
+    # np.set_printoptions(threshold=np.inf)
+    # # plot_colored_grid(grid_health_level)
 
 def main():
     list_of_beetles = []
@@ -250,15 +252,15 @@ def main():
     # print every 1 months
     time_step = 1
 
-    simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-                            stay_at_tree_probability, list_of_beetles)
+    # simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+    #                         stay_at_tree_probability, list_of_beetles)
 
 
     # health_level_threshold: if the health level is greater than this threshold, the tree shows symptoms and
     # we can implement containment strategies
-    health_level_threshold = 0.4
-    # infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-    #                       stay_at_tree_probability, list_of_beetles, health_level_threshold)
+    health_level_threshold = 0.3
+    infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+                          stay_at_tree_probability, list_of_beetles, health_level_threshold)
 
 
 

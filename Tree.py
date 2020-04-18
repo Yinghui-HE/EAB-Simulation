@@ -20,7 +20,7 @@ class Tree(object):
             self.update_health_level(self.infected_months / 12)
 
     def update_health_level(self, infected_years):
-        CONST = 1
+        CONST = 0.8
         # TODO: how many beetles on the tree
         #  depends on the eating rate
         # shape of a function
