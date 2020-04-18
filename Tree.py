@@ -50,6 +50,12 @@ class Tree(object):
             self.get_infected(infected_start_time)
         self.beetle_list.append(beetle)
 
+    def delete_beetle_on_tree(self, beetle):
+        try:
+            self.beetle_list.remove(beetle)
+        except:
+            pass
+
     def add_neighbor(self, neighbor_tree):
         self.neighbor_list.append(neighbor_tree)
 

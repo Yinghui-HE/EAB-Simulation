@@ -96,11 +96,7 @@ def generate_random_start_location(num_rows, num_cols):
     return x, y
 
 
-# a beetle fly average 3 kilometers => ~10000 ft
-# the size of each cell is (1000ft * 1000ft)
-#   => radius of the circle from a tree: 10 cells => 9 cells in between
-def declare_neighbors_for_all_trees(list_tree):
-    radius = 9
+def declare_neighbors_for_all_trees(list_tree, radius):
     for i in range(len(list_tree)):
         j = i + 1
         tree = list_tree[i]
@@ -126,7 +122,7 @@ def main():
 
     # num_months to simulate
     # time is in the unit of "months" => 120 months(10 years)
-    num_months = 150
+    num_months = 200
 
     # grid_rand: a grid of 0's and 1's representing whether the tree exists or not
     grid_rand = generate_random_grid(num_rows, num_cols)
@@ -139,9 +135,14 @@ def main():
     grid_health_level = generate_tree_grid_by_health_level(grid_tree)
     print(grid_health_level)
 
+    # a beetle fly average 3 kilometers => ~10000 ft
+    # the size of each cell is (1000ft * 1000ft)
+    #   => radius of the circle from a tree: 10 cells => 9 cells in between
+    radius = 5
+
     # declare neighbors for all trees
     print("\nDeclare neighbors for all trees...", end="")
-    declare_neighbors_for_all_trees(list_tree)
+    declare_neighbors_for_all_trees(list_tree, radius)
     print("Successfully\n")
 
     # generate random location index for the first eab
@@ -181,9 +182,12 @@ def main():
                     neighbor_list = beetle.get_curr_tree().get_neighbors()
                     # if cannot find a neighbor tree within 3 km, eab will die
                     if len(neighbor_list) == 0:
+                        beetle.delete_beetle_on_curr_tree()
                         beetle.die()
                     # fly to a random tree nearby, lay eggs (reproduce), and die
                     else:
+                        # delete the beetle from current tree's beetle_list
+                        beetle.delete_beetle_on_curr_tree()
                         # choose a random tree and fly to it
                         neighbor_index = random.randrange(len(neighbor_list))
                         beetle.change_curr_tree(neighbor_list[neighbor_index])
@@ -197,14 +201,17 @@ def main():
                 else:
                     babies = beetle.reproduce(birth_time=time)
                     beetles_next.extend(babies)
+                    # delete the beetle from current tree's beetle_list
+                    beetle.delete_beetle_on_curr_tree()
                     beetle.die()
+
                     # print("\nStay at the tree", beetle.curr_tree)
             # the beetle is still a larvae (still alive for the next time step)
             else:
                 beetles_next.append(beetle)
 
         list_of_beetles = beetles_next
-        if time % 4 == 0:
+        if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             print(grid_health_level)
             plot_colored_grid(grid_health_level)
