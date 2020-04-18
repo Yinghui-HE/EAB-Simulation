@@ -17,11 +17,13 @@ def plot_colored_grid(grid_health_level):
     num_rows = grid_health_level.shape[0]
     num_cols = grid_health_level.shape[1]
     # create discrete colormap
-    cmap = colors.ListedColormap(['#A41212', '#C52C2C',  '#E14545', '#FD6A6A', '#FEBCBC'])
-    cmap.set_under('white')
-    cmap.set_over('green')
+    # cmap = colors.ListedColormap(['#A41212', '#C52C2C',  '#E14545', '#FD6A6A', '#FEBCBC'])
+    cmap = colors.ListedColormap(['green', '#FEBCBC', '#FD6A6A', '#C52C2C', '#A41212'])
 
-    bounds = [0, 1, 2, 3, 4, 5]
+    cmap.set_under('white')
+    cmap.set_over('red')
+
+    bounds = [0.1, 0.2, 0.4, 0.6, 0.8, 1]
     norm = colors.BoundaryNorm(bounds, cmap.N)
 
     fig, ax = plt.subplots()
@@ -213,7 +215,7 @@ def main():
         list_of_beetles = beetles_next
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-            print(grid_health_level)
+            # print(grid_health_level)
             plot_colored_grid(grid_health_level)
             print()
     grid_health_level = generate_tree_grid_by_health_level(grid_tree)
