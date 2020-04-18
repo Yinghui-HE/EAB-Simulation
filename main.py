@@ -5,9 +5,7 @@ import random
 import math
 import matplotlib.pyplot as plt
 from matplotlib import colors
-from matplotlib.pyplot import plot, ion, show
-import matplotlib.animation as animation
-
+from numpy import loadtxt
 
 from Tree import Tree
 from Beetle import Beetle
@@ -38,10 +36,10 @@ def plot_colored_grid(grid_health_level):
     plt.show()
     # plt.draw()
 
-def generate_random_grid(num_rows, num_cols):
-    # create a sparse grid (with less trees)
-    grid_rand = np.random.choice(2, size=(num_rows, num_cols), p=[0.7, 0.3])
-    return grid_rand
+# def generate_random_grid(num_rows, num_cols):
+#     # create a sparse grid (with less trees)
+#     grid_rand = np.random.choice(2, size=(num_rows, num_cols), p=[0.7, 0.3])
+#     return grid_rand
 
 def generate_tree_grid(grid_rand):
     num_rows = grid_rand.shape[0]
@@ -119,7 +117,7 @@ def main():
     num_cols = 50
 
     # the probabilities of moving to another tree and staying at current tree to lay eggs after eab becomes adult
-    leave_tree_probability = 0.9
+    leave_tree_probability = 0.6
     stay_at_tree_probability = 1 - leave_tree_probability # = 0.1
 
     # num_months to simulate
@@ -127,7 +125,8 @@ def main():
     num_months = 200
 
     # grid_rand: a grid of 0's and 1's representing whether the tree exists or not
-    grid_rand = generate_random_grid(num_rows, num_cols)
+    # grid_rand = generate_random_grid(num_rows, num_cols)
+    grid_rand = loadtxt('data.csv', delimiter=',')
     print(grid_rand)
     # grid_tree: a grid of Tree objects
     grid_tree, list_tree = generate_tree_grid(grid_rand)
@@ -140,7 +139,7 @@ def main():
     # a beetle fly average 3 kilometers => ~10000 ft
     # the size of each cell is (1000ft * 1000ft)
     #   => radius of the circle from a tree: 10 cells => 9 cells in between
-    radius = 5
+    radius = 10
 
     # declare neighbors for all trees
     print("\nDeclare neighbors for all trees...", end="")
