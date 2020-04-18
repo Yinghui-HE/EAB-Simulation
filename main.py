@@ -37,8 +37,8 @@ def plot_colored_grid(grid_health_level):
     # plt.draw()
 
 def generate_random_grid(num_rows, num_cols):
-    # TODO: sparse
-    grid_rand = np.random.randint(2, size=(num_rows, num_cols))
+    # create a sparse grid (with less trees)
+    grid_rand = np.random.choice(2, size=(num_rows, num_cols), p=[0.7, 0.3])
     return grid_rand
 
 def generate_tree_grid(grid_rand):
