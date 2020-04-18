@@ -5,7 +5,7 @@ import random
 
 def generate_random_grid(num_rows, num_cols):
     # create a sparse grid (with less trees)
-    grid_rand = np.random.choice(2, size=(num_rows, num_cols), p=[0.7, 0.3])
+    grid_rand = np.random.choice(2, size=(num_rows, num_cols), p=[0.8, 0.2])
     return grid_rand
 
 
@@ -34,6 +34,7 @@ def generate_random_start_location(num_rows, num_cols):
 
 def store_grid_to_file(grid_rand, filename = "grid.csv"):
     savetxt(filename, grid_rand, delimiter=',')
+
 
 def store_start_location_to_file(location_list, filename = "start_point.csv"):
     savetxt(filename, location_list, delimiter=',')

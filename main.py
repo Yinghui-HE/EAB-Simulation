@@ -86,58 +86,8 @@ def declare_neighbors_for_all_trees(list_tree, radius):
                 neighbor.add_neighbor(tree)
 
 
-def main():
-    list_of_beetles = []
-
-    # size of the grid
-    num_rows = 50
-    num_cols = 50
-
-    # the probabilities of moving to another tree and staying at current tree to lay eggs after eab becomes adult
-    leave_tree_probability = 0.6
-    stay_at_tree_probability = 1 - leave_tree_probability # = 0.1
-
-    # num_months to simulate
-    # time is in the unit of "months" => 120 months(10 years)
-    num_months = 200
-
-    # grid_rand: a grid of 0's and 1's representing whether the tree exists or not
-    # grid_rand = generate_random_grid(num_rows, num_cols)
-    grid_rand = loadtxt('grid.csv', delimiter=',')
-    print(grid_rand)
-    # grid_tree: a grid of Tree objects
-    grid_tree, list_tree = generate_tree_grid(grid_rand)
-    print(grid_tree)
-    print(list_tree)
-    # grid_health_level: a grid of health levels of the tree
-    grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-    print(grid_health_level)
-
-    # a beetle fly average 3 kilometers => ~10000 ft
-    # the size of each cell is (1000ft * 1000ft)
-    #   => radius of the circle from a tree: 10 cells => 9 cells in between
-    radius = 6
-
-    # declare neighbors for all trees
-    print("\nDeclare neighbors for all trees...", end="")
-    declare_neighbors_for_all_trees(list_tree, radius)
-    print("Successfully\n")
-
-    # generate random location index for the first eab
-    # x, y = generate_random_start_location(num_rows, num_cols)
-    location_list = loadtxt('start_point.csv', delimiter=',')
-    x = int(location_list[0])
-    y = int(location_list[1])
-    start_tree = grid_tree[x, y]
-    print("Start", start_tree)
-
-
-    # 1st tree get infected
-    start_beetle = Beetle(start_tree, 0)
-    list_of_beetles.append(start_beetle)
-
-
-    time_step = 1 # print every 1 months
+def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+                            stay_at_tree_probability, list_of_beetles):
     for time in range(1, num_months, time_step):
         # at each time step
         beetles_next = []
@@ -199,6 +149,62 @@ def main():
     print(grid_health_level)
     np.set_printoptions(threshold=np.inf)
     plot_colored_grid(grid_health_level)
+
+
+
+def main():
+    list_of_beetles = []
+
+    # size of the grid
+    num_rows = 50
+    num_cols = 50
+
+    # the probabilities of moving to another tree and staying at current tree to lay eggs after eab becomes adult
+    leave_tree_probability = 0.6
+    stay_at_tree_probability = 1 - leave_tree_probability # = 0.1
+
+    # num_months to simulate
+    # time is in the unit of "months" => 120 months(10 years)
+    num_months = 200
+
+    # grid_rand: a grid of 0's and 1's representing whether the tree exists or not
+    # grid_rand = generate_random_grid(num_rows, num_cols)
+    grid_rand = loadtxt('grid.csv', delimiter=',')
+    print(grid_rand)
+    # grid_tree: a grid of Tree objects
+    grid_tree, list_tree = generate_tree_grid(grid_rand)
+    print(grid_tree)
+    print(list_tree)
+    # grid_health_level: a grid of health levels of the tree
+    grid_health_level = generate_tree_grid_by_health_level(grid_tree)
+    print(grid_health_level)
+
+    # a beetle fly average 3 kilometers => ~10000 ft
+    # the size of each cell is (1000ft * 1000ft)
+    #   => radius of the circle from a tree: 10 cells => 9 cells in between
+    radius = 6
+
+    # declare neighbors for all trees
+    print("\nDeclare neighbors for all trees...", end="")
+    declare_neighbors_for_all_trees(list_tree, radius)
+    print("Successfully\n")
+
+    # generate random location index for the first eab，read the location from file
+    location_list = loadtxt('start_point.csv', delimiter=',')
+    x = int(location_list[0])
+    y = int(location_list[1])
+    start_tree = grid_tree[x, y]
+    print("Start", start_tree)
+
+
+    # 1st tree get infected
+    start_beetle = Beetle(start_tree, 0)
+    list_of_beetles.append(start_beetle)
+
+    # print every 1 months
+    time_step = 1
+
+    simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability, list_of_beetles)
 
 
 
