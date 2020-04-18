@@ -73,29 +73,6 @@ def generate_tree_grid_by_health_level(grid_tree):
     return np.array(grid_health_level)
 
 
-# start location generated is on one of the edges of the grid
-def generate_random_start_location(num_rows, num_cols):
-    x = num_rows - 1
-    y = num_cols - 1
-
-    # edge = 0, on a row; edge = 1, on a col
-    edge = random.randint(0, 1)
-    if edge == 0:
-        # row = 0, on 1st row; row = 1, on last row
-        row = random.randint(0, 1)
-        if row == 0:
-            x = 0
-        y = random.randint(0, num_cols-1)
-    elif edge == 1:
-        # col = 0, on 1st col; col = 1, on last col
-        col = random.randint(0, 1)
-        if col == 0:
-            y = 0
-        x = random.randint(0, num_rows-1)
-
-    return x, y
-
-
 def declare_neighbors_for_all_trees(list_tree, radius):
     for i in range(len(list_tree)):
         j = i + 1
@@ -126,7 +103,7 @@ def main():
 
     # grid_rand: a grid of 0's and 1's representing whether the tree exists or not
     # grid_rand = generate_random_grid(num_rows, num_cols)
-    grid_rand = loadtxt('data.csv', delimiter=',')
+    grid_rand = loadtxt('grid.csv', delimiter=',')
     print(grid_rand)
     # grid_tree: a grid of Tree objects
     grid_tree, list_tree = generate_tree_grid(grid_rand)
@@ -139,7 +116,7 @@ def main():
     # a beetle fly average 3 kilometers => ~10000 ft
     # the size of each cell is (1000ft * 1000ft)
     #   => radius of the circle from a tree: 10 cells => 9 cells in between
-    radius = 10
+    radius = 6
 
     # declare neighbors for all trees
     print("\nDeclare neighbors for all trees...", end="")
@@ -147,9 +124,10 @@ def main():
     print("Successfully\n")
 
     # generate random location index for the first eab
-    x, y = generate_random_start_location(num_rows, num_cols)
-    while grid_tree[x, y] is None:
-        x, y = generate_random_start_location(num_rows, num_cols)
+    # x, y = generate_random_start_location(num_rows, num_cols)
+    location_list = loadtxt('start_point.csv', delimiter=',')
+    x = int(location_list[0])
+    y = int(location_list[1])
     start_tree = grid_tree[x, y]
     print("Start", start_tree)
 
