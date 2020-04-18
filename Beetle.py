@@ -6,7 +6,7 @@ stages = ["hatch", "larvae", "adults"]
 
 # Beetle class (EAB)
 class Beetle(object):
-    NUM_EGGS = 3
+    NUM_EGGS = 5
     def __init__(self, start_tree, birth_time):
         self.age = 0 # in months
         self.curr_tree = start_tree

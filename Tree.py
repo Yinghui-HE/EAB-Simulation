@@ -33,6 +33,8 @@ class Tree(object):
         print("health_level: ", self.health_level)
         print(self)
 
+    def get_health_level(self):
+        return self.health_level
 
     def get_infected(self, infected_start_time):
         self.infected = True
