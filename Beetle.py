@@ -26,8 +26,9 @@ class Beetle(object):
     def die(self):
         self.alive = False
 
-    def delete_beetle_on_curr_tree(self):
+    def delete_beetle_on_curr_tree(self, time):
         self.curr_tree.delete_beetle_on_tree(self)
+        self.curr_tree.update_health_level(time)
 
     def get_curr_tree(self):
         return self.curr_tree

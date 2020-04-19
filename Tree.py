@@ -10,28 +10,30 @@ class Tree(object):
         self.neighbor_list = []
         self.x = x
         self.y = y
+        self.last_time_update_health = 0
+        self.old_health_level = self.health_level
+        self.old_beetle_num = 0
         self.removed = False
 
     def is_infected(self):
         return self.infected
 
     def update_infected_time(self, curr_time):
-        if self.health_level == 0.1 and self.infected_months != curr_time - self.infected_start_time:
+        if self.infected_months != curr_time - self.infected_start_time:
             self.infected_months = curr_time - self.infected_start_time
-            self.update_health_level(self.infected_months / 12)
 
-    def update_health_level(self, infected_years):
-        CONST = 0.8
-        # TODO: how many beetles on the tree
-        #  depends on the eating rate
-        # shape of a function
-        curr_health = self.health_level
-        # print("health_level: ", )
+    def update_health_level(self, curr_time):
+        CONST = 0.005
+        old_health = self.old_health_level
         num_beetles = len(self.beetle_list)
-        # u is a function of num_beetles
-        u = 1 + CONST * num_beetles
-        self.health_level = (u * curr_health) / (1 + (u-1)*curr_health)
-        print("health_level: ", self.health_level)
+        u = 1 + CONST * num_beetles # u is a function of num_beetles
+        self.health_level = (u * old_health) / (1 + (u-1)*old_health)
+
+        if curr_time != self.last_time_update_health:
+            self.last_time_update_health = curr_time
+            self.old_health_level = self.health_level
+
+        print("health_level: ", self.health_level, ", curr_time: ", curr_time)
         print(self)
 
     def get_health_level(self):
@@ -52,6 +54,9 @@ class Tree(object):
         except:
             print("Beetle", beetle, "is not in the beetle list of tree", self)
 
+    def get_beetle_list(self):
+        return self.beetle_list
+
     def add_neighbor(self, neighbor_tree):
         self.neighbor_list.append(neighbor_tree)
 
@@ -71,5 +76,8 @@ class Tree(object):
               + "\n\tYears of being infected: " + str(self.infected_months / 12) \
               + "\n\tx: " + str(self.x) \
               + "\n\ty: " + str(self.y) \
-              + "\n\tNumber of Beetles on the tree: " + str(len(self.beetle_list))
+              + "\n\tNumber of Beetles on the tree: " + str(len(self.beetle_list)) \
+              + "\n\tLast time updating health level: " + str(self.last_time_update_health) \
+              + "\n\tOld health level: " + str(self.old_health_level)
+
         return msg
