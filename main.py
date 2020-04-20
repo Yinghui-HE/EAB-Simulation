@@ -127,9 +127,20 @@ def become_adult(leave_tree_probability, stay_at_tree_probability, beetle, time)
     return babies
 
 
+def draw_tree_health_changes(health_change_list, time_range_list):
+    plt.plot(time_range_list, health_change_list)
+    plt.title("Health levels of the start tree")
+    plt.xlabel("time (months)")
+    plt.ylabel("health levels")
+    plt.show()
+
+
 def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-                            stay_at_tree_probability, list_of_beetles):
+                            stay_at_tree_probability, list_of_beetles, start_tree):
+    time_range_list = range(1, num_months, time_step)
+    start_tree_health_list = []
     for time in range(1, num_months, time_step):
+        start_tree_health_list.append(start_tree.get_health_level())
         # at each time step
         beetles_next = []
 
@@ -157,10 +168,13 @@ def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_t
                 tree.update_infected_time(curr_time=time)
                 tree.update_health_level(curr_time=time)
                 # print("\nUpdate tree's infected years", tree)
+
     grid_health_level = generate_tree_grid_by_health_level(grid_tree)
     print(grid_health_level)
     np.set_printoptions(threshold=np.inf)
     # plot_colored_grid(grid_health_level)
+
+    draw_tree_health_changes(start_tree_health_list, time_range_list)
 
 
 def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
@@ -331,7 +345,7 @@ def main():
 
     # num_months to simulate
     # time is in the unit of "months" => 120 months(10 years)
-    num_months = 200
+    num_months = 96
 
     # grid_rand: a grid of 0's and 1's representing whether the tree exists or not
     # grid_rand = generate_random_grid(num_rows, num_cols)
@@ -372,7 +386,7 @@ def main():
 
     # natural simulation
     simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-                            stay_at_tree_probability, list_of_beetles)
+                            stay_at_tree_probability, list_of_beetles, start_tree)
 
 
     # health_level_threshold: if the health level is greater than this threshold, the tree shows symptoms and

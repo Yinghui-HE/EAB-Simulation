@@ -12,7 +12,6 @@ class Tree(object):
         self.y = y
         self.last_time_update_health = 0
         self.old_health_level = self.health_level
-        self.old_beetle_num = 0
         self.removed = False
 
     def is_infected(self):

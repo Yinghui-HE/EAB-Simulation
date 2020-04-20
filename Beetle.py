@@ -16,7 +16,7 @@ class Beetle(object):
     def update_age(self, months_increased):
         self.age += months_increased
 
-    # eab lays 50 eggs at a time
+    # eab lays 5 eggs at a time
     def reproduce(self, birth_time):
         beetle_babies = []
         for i in range(self.NUM_EGGS):
