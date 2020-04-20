@@ -32,8 +32,8 @@ class Tree(object):
             self.last_time_update_health = curr_time
             self.old_health_level = self.health_level
 
-        print("health_level: ", self.health_level, ", curr_time: ", curr_time)
-        print(self)
+        # print("health_level: ", self.health_level, ", curr_time: ", curr_time)
+        # print(self)
 
     def get_health_level(self):
         return self.health_level

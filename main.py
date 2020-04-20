@@ -12,7 +12,8 @@ from Tree import Tree
 from Beetle import Beetle
 # np.set_printoptions(threshold=np.inf)
 
-def plot_colored_grid(grid_health_level, time_in_months, title):
+
+def plot_colored_grid(grid_health_level, time_in_months, title, text=""):
     num_rows = grid_health_level.shape[0]
     num_cols = grid_health_level.shape[1]
 
@@ -29,6 +30,7 @@ def plot_colored_grid(grid_health_level, time_in_months, title):
     fig, ax = plt.subplots()
     plt.title("Ash tree population simulation (" + title + ")\nat time = " + str(time_in_months) +
               " months (" + str(time_in_months/12) + " years)")
+    plt.text(8, 55, text)
     ax.imshow(grid_health_level, cmap=cmap, norm=norm)
 
     # draw gridlines
@@ -180,6 +182,7 @@ def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_t
 def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
                             stay_at_tree_probability, list_of_beetles, health_level_threshold):
     list_of_trees_left = list_tree
+    num_trees_removed = 0
     for time in range(1, num_months, time_step):
         # at each time step
         beetles_next = []
@@ -201,7 +204,8 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             # print(grid_health_level)
-            plot_colored_grid(grid_health_level, time, "infested tree removal with threshold = " + str(health_level_threshold))
+            plot_colored_grid(grid_health_level, time, "infested tree removal with threshold = "
+                        + str(health_level_threshold), text="total number of trees removed = " + str(num_trees_removed))
             print()
 
         for tree in list_tree:
@@ -212,8 +216,8 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
                 if tree.get_health_level() > health_level_threshold:
                     list_of_trees_left.remove(tree)
                     grid_tree[tree.x][tree.y] = None
+                    num_trees_removed += 1
 
-        # print("\nUpdate tree's infected years", tree)
         list_tree = list_of_trees_left
 
     # grid_health_level = generate_tree_grid_by_health_level(grid_tree)
@@ -222,18 +226,20 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
     # # plot_colored_grid(grid_health_level)
 
 
-def delete_all_neighbors(neighbors, grid_tree, list_of_trees_left):
+def delete_all_neighbors(neighbors, grid_tree, list_of_trees_left, num_trees_removed):
     for neighbor in neighbors:
         if not neighbor.is_removed():
             list_of_trees_left.remove(neighbor)
             grid_tree[neighbor.x][neighbor.y] = None
             neighbor.remove_tree()
-    return list_of_trees_left, grid_tree
+            num_trees_removed += 1
+    return list_of_trees_left, grid_tree, num_trees_removed
 
 
 def quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
                                                 stay_at_tree_probability, list_of_beetles, health_level_threshold):
     list_of_trees_left = list_tree
+    num_trees_removed = 0
     for time in range(1, num_months, time_step):
         # at each time step
         beetles_next = []
@@ -255,8 +261,8 @@ def quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probabili
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             # print(grid_health_level)
-            plot_colored_grid(grid_health_level, time,
-                              "quarantine with threshold = " + str(health_level_threshold))
+            plot_colored_grid(grid_health_level, time, "quarantine with threshold = " + str(health_level_threshold),
+                              text="total number of trees removed = " + str(num_trees_removed))
             print()
 
         for tree in list_tree:
@@ -266,7 +272,8 @@ def quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probabili
                 # remove the tree if pass the threshold
                 if tree.get_health_level() > health_level_threshold:
                     neighbors = tree.get_neighbors()
-                    list_of_trees_left, grid_tree = delete_all_neighbors(neighbors, grid_tree, list_of_trees_left)
+                    list_of_trees_left, grid_tree, num_trees_removed = delete_all_neighbors(neighbors, grid_tree,
+                                                                                list_of_trees_left, num_trees_removed)
 
         # print("\nUpdate tree's infected years", tree)
         list_tree = list_of_trees_left
@@ -292,6 +299,7 @@ def give_insecticides(list_of_trees, num_bugs_killed, list_of_beetles, time):
 
 def insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability,
                  list_of_beetles, health_level_threshold, insecticides_for_trees_type, num_bugs_killed):
+    num_tree_get_insecticide = 0
     for time in range(1, num_months, time_step):
         # at each time step
         beetles_next = []
@@ -303,10 +311,13 @@ def insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probabi
                 if len(tree.get_beetle_list())>0 and tree.get_health_level() > health_level_threshold:
                     if insecticides_for_trees_type == "all trees":
                         list_of_beetles = give_insecticides(list_tree, num_bugs_killed, list_of_beetles, time)
+                        num_tree_get_insecticide += len(list_tree)
                     elif insecticides_for_trees_type == "neighbors":
                         list_of_beetles = give_insecticides(tree.get_neighbors(), num_bugs_killed, list_of_beetles, time)
+                        num_tree_get_insecticide += len(tree.get_neighbors())
                     else:
                         list_of_beetles = give_insecticides([tree], num_bugs_killed, list_of_beetles, time)
+                        num_tree_get_insecticide += 1
                 else:
                     tree.update_health_level(curr_time=time)
 
@@ -329,7 +340,8 @@ def insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probabi
             plot_colored_grid(grid_health_level, time,
                               "insecticide with threshold = " + str(health_level_threshold)
                               + ", \neffective for " + insecticides_for_trees_type +
-                              ", killing maximum of " + str(num_bugs_killed) + " bugs per tree")
+                              ", killing maximum of " + str(num_bugs_killed) + " bugs per tree",
+                              text="insecticide on " + str(num_tree_get_insecticide) + " trees")
             print()
 
 def main():
@@ -345,7 +357,7 @@ def main():
 
     # num_months to simulate
     # time is in the unit of "months" => 120 months(10 years)
-    num_months = 96
+    num_months = 200
 
     # grid_rand: a grid of 0's and 1's representing whether the tree exists or not
     # grid_rand = generate_random_grid(num_rows, num_cols)
@@ -385,8 +397,8 @@ def main():
     time_step = 1
 
     # natural simulation
-    simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-                            stay_at_tree_probability, list_of_beetles, start_tree)
+    # simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+    #                         stay_at_tree_probability, list_of_beetles, start_tree)
 
 
     # health_level_threshold: if the health level is greater than this threshold, the tree shows symptoms and
