@@ -420,30 +420,49 @@ def main():
 
     # bounds = [0, 0.11, 0.3, 0.4, 0.5, 0.6, 0.8, 0.95, 0.98, 0.99, 1.1]
 
-    health_level_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    health_level_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for tree in list_tree:
         if not tree.is_removed():
             health = tree.get_health_level()
             if health == 0.1:
                 health_level_count[0] += 1
-            elif 0.1 < health <= 0.2:
+            elif 0.1 < health <= 0.3:
                 health_level_count[1] += 1
-            elif 0.2 < health <= 0.3:
-                health_level_count[2] += 1
             elif 0.3 < health <= 0.4:
-                health_level_count[3] += 1
+                health_level_count[2] += 1
             elif 0.4 < health <= 0.5:
-                health_level_count[4] += 1
+                health_level_count[3] += 1
             elif 0.5 < health <= 0.6:
-                health_level_count[5] += 1
+                health_level_count[4] += 1
             elif 0.6 < health <= 0.8:
-                health_level_count[6] += 1
+                health_level_count[5] += 1
             elif 0.8 < health <= 0.95:
+                health_level_count[6] += 1
+            elif 0.95 < health <= 0.98:
                 health_level_count[7] += 1
             elif 0.98 < health <= 0.99:
                 health_level_count[8] += 1
             elif health > 0.99:
                 health_level_count[9] += 1
     print(health_level_count)
+
+    fig, ax = plt.subplots()
+
+    # hide axes
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    ax.axis('tight')
+    plt.table([["healthy (0.1)", "(0.1, 0.3]", "(0.3, 0.4]", "(0.4, 0.5]", "(0.5, 0.6]", "(0.6, 0.8]", "(0.8, 0.95]",
+                    "(0.95, 0.98]", "(0.98, 0.99]", "(0.99, 1]"],
+               [str(health_level_count[0]), str(health_level_count[1]), str(health_level_count[2]), str(health_level_count[3]),
+                str(health_level_count[4]), str(health_level_count[5]), str(health_level_count[6]), str(health_level_count[7]),
+                str(health_level_count[8]), str(health_level_count[9])]
+               ],
+              cellColours=[['green', '#FAD1D1', '#FBBBBB', '#FCA5A5', '#F58282', '#F36565', '#F43333', '#D42121', '#BB1010', '#9A0E0E'],
+                           ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]
+                           ],
+              loc='center')
+    fig.tight_layout()
+    plt.show()
 
 main()
