@@ -16,7 +16,6 @@ def plot_colored_grid(grid_health_level, time_in_months, title, text=""):
     num_cols = grid_health_level.shape[1]
 
     # create discrete colormap
-    # cmap = colors.ListedColormap(['#A41212', '#C52C2C',  '#E14545', '#FD6A6A', '#FEBCBC'])
     cmap = colors.ListedColormap(['green', '#FAD1D1', '#FBBBBB', '#FCA5A5', '#F58282', '#F36565', '#F43333', '#D42121', '#BB1010', '#9A0E0E'])
 
     cmap.set_under('white')
@@ -147,7 +146,6 @@ def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_t
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             plot_colored_grid(grid_health_level, time, "natural simulation")
-            print()
 
         for tree in list_tree:
             if tree.is_infected():
@@ -169,7 +167,6 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
             if beetle.get_curr_tree() in list_of_trees_left: # if the tree wasn't removed
                 beetle.update_age(time_step) # add beetle's age by 1 month
 
-                # print("\nCurrent tree: ", beetle.get_curr_tree())
                 # the beetle changes from a larvae to an adult
                 if beetle.age >= 11:
                     babies = become_adult(leave_tree_probability, stay_at_tree_probability, beetle, time)
@@ -183,7 +180,6 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
             plot_colored_grid(grid_health_level, time, "infested tree removal with threshold = "
                         + str(health_level_threshold), text="total number of trees removed = " + str(num_trees_removed))
-            print()
 
         for tree in list_tree:
             if tree.is_infected():
@@ -220,8 +216,6 @@ def quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probabili
         for beetle in list_of_beetles:
             if beetle.get_curr_tree() in list_of_trees_left:  # if the tree wasn't removed
                 beetle.update_age(time_step)  # add beetle's age by 1 month
-
-                # print("\nCurrent tree: ", beetle.get_curr_tree())
                 # the beetle changes from a larvae to an adult
                 if beetle.age >= 11:
                     babies = become_adult(leave_tree_probability, stay_at_tree_probability, beetle, time)
@@ -233,10 +227,8 @@ def quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probabili
 
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-            # print(grid_health_level)
             plot_colored_grid(grid_health_level, time, "quarantine with threshold = " + str(health_level_threshold),
                               text="total number of trees removed = " + str(num_trees_removed))
-            print()
 
         for tree in list_tree:
             if tree.is_infected():
@@ -248,7 +240,6 @@ def quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probabili
                     list_of_trees_left, grid_tree, num_trees_removed = delete_all_neighbors(neighbors, grid_tree,
                                                                                 list_of_trees_left, num_trees_removed)
 
-        # print("\nUpdate tree's infected years", tree)
         list_tree = list_of_trees_left
 
 
@@ -295,8 +286,6 @@ def insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probabi
 
         for beetle in list_of_beetles:
             beetle.update_age(time_step)  # add beetle's age by 1 month
-
-            # print("\nCurrent tree: ", beetle.get_curr_tree())
             # the beetle changes from a larvae to an adult
             if beetle.age >= 11:
                 babies = become_adult(leave_tree_probability, stay_at_tree_probability, beetle, time)
@@ -308,20 +297,14 @@ def insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probabi
 
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-            # print(grid_health_level)
             plot_colored_grid(grid_health_level, time,
                               "insecticide with threshold = " + str(health_level_threshold)
                               + ", \neffective for " + insecticides_for_trees_type +
                               ", killing maximum of \n" + str(num_bugs_killed) + " bugs per tree",
                               text="insecticide on " + str(num_tree_get_insecticide) + " trees")
-            print()
 
 def main():
     list_of_beetles = []
-
-    # size of the grid
-    num_rows = 50
-    num_cols = 50
 
     # the probabilities of moving to another tree and staying at current tree to lay eggs after eab becomes adult
     leave_tree_probability = 0.6
@@ -365,37 +348,43 @@ def main():
     start_beetle = Beetle(start_tree, 0)
     list_of_beetles.append(start_beetle)
 
-    # print every 1 months
+    # update variables every 1 months
     time_step = 1
 
     # natural simulation
-    # simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-    #                         stay_at_tree_probability, list_of_beetles, start_tree)
+    # simulation 1
+    simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+                            stay_at_tree_probability, list_of_beetles, start_tree)
 
 
     # health_level_threshold: if the health level is greater than this threshold, the tree shows symptoms and
     # we can implement containment strategies
+
     health_level_threshold = 0.3
 
     # infested_tree_removal: remove the infested tree as soon as it is recognized as infested (health_level > threshold)
-    # infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-    #                       stay_at_tree_probability, list_of_beetles, health_level_threshold)
+    # simulation 2
+    infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+                          stay_at_tree_probability, list_of_beetles, health_level_threshold)
 
     # quarantine: remove surrounding neighbors once recognized as infested (health_level > threshold)
+    # simulation 3
     quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
                                                 stay_at_tree_probability, list_of_beetles, health_level_threshold)
 
     # insecticides: give insecticides (remove num_bugs_killed bugs to trees once recognized as infested
     #   (health_level > threshold)
     num_bugs_killed = sys.maxsize
-    # insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability,
-    #              list_of_beetles, health_level_threshold, insecticides_for_trees_type="all trees", num_bugs_killed=num_bugs_killed)
-    # insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability,
-    #              list_of_beetles, health_level_threshold, insecticides_for_trees_type="neighbors", num_bugs_killed=num_bugs_killed)
-    # insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability,
-    #              list_of_beetles, health_level_threshold, insecticides_for_trees_type="current tree", num_bugs_killed=num_bugs_killed)
+    # simulation 4
+    insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability,
+                 list_of_beetles, health_level_threshold, insecticides_for_trees_type="all trees", num_bugs_killed=num_bugs_killed)
+    # simulation 5
+    insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability,
+                 list_of_beetles, health_level_threshold, insecticides_for_trees_type="neighbors", num_bugs_killed=num_bugs_killed)
+    # simulation 6
+    insecticides(grid_tree, list_tree, num_months, time_step, leave_tree_probability, stay_at_tree_probability,
+                 list_of_beetles, health_level_threshold, insecticides_for_trees_type="current tree", num_bugs_killed=num_bugs_killed)
 
-    # bounds = [0, 0.11, 0.3, 0.4, 0.5, 0.6, 0.8, 0.95, 0.98, 0.99, 1.1]
 
     health_level_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for tree in list_tree:
