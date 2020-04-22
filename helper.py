@@ -50,4 +50,5 @@ def main():
         start_x, start_y = generate_random_start_location(num_rows, num_cols)
     store_start_location_to_file(np.array([start_x, start_y]))
 
+
 main()

@@ -1,7 +1,9 @@
+# Class of beetle
+
 from Tree import Tree
 
 # larvae: 340 days ~ 11 months
-# adults: 2 months (avg 50 eggs)
+# adults: avg 5 eggs)
 stages = ["hatch", "larvae", "adults"]
 
 # Beetle class (EAB)

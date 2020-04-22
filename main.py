@@ -1,4 +1,4 @@
-# Start of the program
+# the main program
 
 import numpy as np
 import random
@@ -10,8 +10,6 @@ import sys
 
 from Tree import Tree
 from Beetle import Beetle
-# np.set_printoptions(threshold=np.inf)
-
 
 def plot_colored_grid(grid_health_level, time_in_months, title, text=""):
     num_rows = grid_health_level.shape[0]
@@ -37,15 +35,7 @@ def plot_colored_grid(grid_health_level, time_in_months, title, text=""):
     ax.grid(which='minor', axis='both', linestyle='-', color='k', linewidth=2)
     ax.set_xticks(np.arange(0, num_cols+1, 5));
     ax.set_yticks(np.arange(0, num_rows+1, 5));
-    # ani = animation.FuncAnimation(fig, update, data_gen, interval=500,
-    #                               save_count=50)
     plt.show()
-    # plt.draw()
-
-# def generate_random_grid(num_rows, num_cols):
-#     # create a sparse grid (with less trees)
-#     grid_rand = np.random.choice(2, size=(num_rows, num_cols), p=[0.7, 0.3])
-#     return grid_rand
 
 def generate_tree_grid(grid_rand):
     num_rows = grid_rand.shape[0]
@@ -116,8 +106,6 @@ def become_adult(leave_tree_probability, stay_at_tree_probability, beetle, time)
             # lay eggs at the current tree
             babies = beetle.reproduce(birth_time=time)
             beetle.die()
-
-            # print("\nMove to the the tree", neighbor_list[neighbor_index])
     # lay eggs at the current tree, and die
     else:
         babies = beetle.reproduce(birth_time=time)
@@ -125,7 +113,6 @@ def become_adult(leave_tree_probability, stay_at_tree_probability, beetle, time)
         beetle.delete_beetle_on_curr_tree(time)
         beetle.die()
 
-        # print("\nStay at the tree", beetle.curr_tree)
     return babies
 
 
@@ -167,11 +154,6 @@ def simulate_ash_population(grid_tree, list_tree, num_months, time_step, leave_t
                 tree.update_infected_time(curr_time=time)
                 tree.update_health_level(curr_time=time)
 
-    grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-    print(grid_health_level)
-    np.set_printoptions(threshold=np.inf)
-    # plot_colored_grid(grid_health_level)
-
     draw_tree_health_changes(start_tree_health_list, time_range_list)
 
 
@@ -199,7 +181,6 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
 
         if time % 6 == 0:
             grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-            # print(grid_health_level)
             plot_colored_grid(grid_health_level, time, "infested tree removal with threshold = "
                         + str(health_level_threshold), text="total number of trees removed = " + str(num_trees_removed))
             print()
@@ -216,10 +197,6 @@ def infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tre
 
         list_tree = list_of_trees_left
 
-    # grid_health_level = generate_tree_grid_by_health_level(grid_tree)
-    # print(grid_health_level)
-    # np.set_printoptions(threshold=np.inf)
-    # # plot_colored_grid(grid_health_level)
 
 
 def delete_all_neighbors(neighbors, grid_tree, list_of_trees_left, num_trees_removed):
@@ -398,15 +375,15 @@ def main():
 
     # health_level_threshold: if the health level is greater than this threshold, the tree shows symptoms and
     # we can implement containment strategies
-    health_level_threshold = 0.2
+    health_level_threshold = 0.3
 
     # infested_tree_removal: remove the infested tree as soon as it is recognized as infested (health_level > threshold)
-    infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-                          stay_at_tree_probability, list_of_beetles, health_level_threshold)
+    # infested_tree_removal(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+    #                       stay_at_tree_probability, list_of_beetles, health_level_threshold)
 
     # quarantine: remove surrounding neighbors once recognized as infested (health_level > threshold)
-    # quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
-    #                                             stay_at_tree_probability, list_of_beetles, health_level_threshold)
+    quarantine(grid_tree, list_tree, num_months, time_step, leave_tree_probability,
+                                                stay_at_tree_probability, list_of_beetles, health_level_threshold)
 
     # insecticides: give insecticides (remove num_bugs_killed bugs to trees once recognized as infested
     #   (health_level > threshold)
@@ -452,14 +429,14 @@ def main():
     fig.patch.set_visible(False)
     ax.axis('off')
     ax.axis('tight')
-    plt.table([["healthy (0.1)", "(0.1, 0.3]", "(0.3, 0.4]", "(0.4, 0.5]", "(0.5, 0.6]", "(0.6, 0.8]", "(0.8, 0.95]",
+    plt.table([["", "healthy (0.1)", "(0.1, 0.3]", "(0.3, 0.4]", "(0.4, 0.5]", "(0.5, 0.6]", "(0.6, 0.8]", "(0.8, 0.95]",
                     "(0.95, 0.98]", "(0.98, 0.99]", "(0.99, 1]"],
-               [str(health_level_count[0]), str(health_level_count[1]), str(health_level_count[2]), str(health_level_count[3]),
+               ["number of trees\nat year 8.5", str(health_level_count[0]), str(health_level_count[1]), str(health_level_count[2]), str(health_level_count[3]),
                 str(health_level_count[4]), str(health_level_count[5]), str(health_level_count[6]), str(health_level_count[7]),
                 str(health_level_count[8]), str(health_level_count[9])]
                ],
-              cellColours=[['green', '#FAD1D1', '#FBBBBB', '#FCA5A5', '#F58282', '#F36565', '#F43333', '#D42121', '#BB1010', '#9A0E0E'],
-                           ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]
+              cellColours=[["#FFFFFF", 'green', '#FAD1D1', '#FBBBBB', '#FCA5A5', '#F58282', '#F36565', '#F43333', '#D42121', '#BB1010', '#9A0E0E'],
+                           ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]
                            ],
               loc='center')
     fig.tight_layout()
