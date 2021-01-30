@@ -1,0 +1,2 @@
+# EAB-Simulation
+We are constructing a spatio-temporal dynamic model to analyze the interactions between ash tree health level and EAB activities for a time span of 10 years where each time step represents one month. The health of the tree is a function of the number of beetle larvae inside the respective tree. We also analyzed the effectiveness of containment strategies, for example, tree removal, tree quarantine and insecticide.
